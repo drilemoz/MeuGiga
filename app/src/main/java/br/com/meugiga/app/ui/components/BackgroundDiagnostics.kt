@@ -50,15 +50,18 @@ fun BackgroundDiagnostics(intervalMinutes: Int, hasUsageAccess: Boolean) {
         }
         lastSuccess = info.second
         batteryExempt = info.third
+        // Capture a referência anulável em uma variável local estável. `info.first` é
+        // uma propriedade pública de Triple, não elegível para smart cast em Kotlin.
+        val scheduledWorks = info.first
         workLabel = when {
             intervalMinutes == 0 -> "Desativado pelo usuário"
             !hasUsageAccess -> "Sem acesso às estatísticas"
-            info.first == null -> "Estado do agendamento indisponível"
-            info.first.isEmpty() -> "Não encontrado: abra a tela novamente após autorizar o acesso"
-            info.first.any { it.state == WorkInfo.State.RUNNING } -> "Consulta em execução"
-            info.first.any { it.state == WorkInfo.State.ENQUEUED } -> "Agendado (horário controlado pelo Android)"
-            info.first.any { it.state == WorkInfo.State.BLOCKED } -> "Aguardando condições do sistema"
-            else -> "Sem trabalho ativo: ${info.first.first().state}"
+            scheduledWorks == null -> "Estado do agendamento indisponível"
+            scheduledWorks.isEmpty() -> "Não encontrado: abra a tela novamente após autorizar o acesso"
+            scheduledWorks.any { it.state == WorkInfo.State.RUNNING } -> "Consulta em execução"
+            scheduledWorks.any { it.state == WorkInfo.State.ENQUEUED } -> "Agendado (horário controlado pelo Android)"
+            scheduledWorks.any { it.state == WorkInfo.State.BLOCKED } -> "Aguardando condições do sistema"
+            else -> "Sem trabalho ativo: ${scheduledWorks.first().state}"
         }
     }
     Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {

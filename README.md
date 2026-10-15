@@ -4,7 +4,12 @@
 
 MeuGiga é um aplicativo Android nativo que acompanha o consumo de **dados móveis** e oferece uma consulta de **Wi-Fi em uma aba independente**. Wi-Fi não participa da franquia, alertas, gráficos ou histórico móvel. Não usa VPN, não bloqueia internet, não limpa o aparelho e não inclui publicidade ou rastreamento.
 
-## Estado da versão 0.1.8
+## Estado da versão 0.1.9
+
+- Corrigida a compilação Kotlin dos workflows Android CI #5 e Signed APK #6: smart casts no diagnóstico WorkManager e import `fillMaxWidth` na tela Sobre.
+- Atualização de correção sem alterações de persistência, permissões, assinatura ou fluxos de consumo móvel/Wi-Fi.
+- Mantidas as funcionalidades introduzidas na 0.1.8:
+
 
 - Calendário para consultar um dia de uso móvel ou Wi-Fi, com intervalos locais e módulos isolados.
 - Sobre → Me Pague um Café com Pix estático e QR gerado localmente. Confira o destinatário em seu banco; nenhum pagamento é processado pelo aplicativo.

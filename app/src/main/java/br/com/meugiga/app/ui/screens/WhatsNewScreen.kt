@@ -72,12 +72,15 @@ fun WhatsNewScreen(
             br.com.meugiga.app.domain.ReleaseHistory.latestThree().first().changes.forEachIndexed { index, change ->
                 item {
                     UpdateItem(
-                        icon = when (index) {
+                        icon = if (BuildConfig.VERSION_CODE >= 10) Icons.Rounded.Info else when (index) {
                             0 -> Icons.Rounded.DateRange
                             1 -> Icons.Rounded.Coffee
                             else -> Icons.Rounded.Info
                         },
-                        title = when (index) {
+                        title = if (BuildConfig.VERSION_CODE >= 10) when (index) {
+                            0 -> "Compilação Android corrigida"
+                            else -> "Recursos e dados preservados"
+                        } else when (index) {
                             0 -> "Calendário nos dois módulos"
                             1 -> "Me Pague um Café"
                             2 -> "Diagnóstico de segundo plano"

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.9 — 15/10/2026
+
+- Correção dos erros de compilação observados nos logs Android CI #5 e Android Signed APK #6 da 0.1.8.
+- `BackgroundDiagnostics.kt`: a lista anulável retornada pelo WorkManager agora é armazenada em `val` local antes da verificação de estado, evitando cinco erros de smart cast Kotlin.
+- `InfoScreens.kt`: import de `fillMaxWidth` para os dois cartões clicáveis na tela Sobre.
+- Preservados módulo Wi-Fi separado, seleção de datas, doações Pix, preferências, Room schema 2, workflows e assinatura existente.
+- Sincronizados VERSION, Gradle, version.json, Novidades, README, validação e documentação de release; `versionName 0.1.9` e `versionCode 10`.
+
+
 ## 0.1.8 — 15/10/2026
 
 - Calendário acessível por ícone nos filtros de consumo móvel e Wi-Fi, com seleção de um dia civil e dados do Android consultados no intervalo correto; Wi-Fi permanece separado.

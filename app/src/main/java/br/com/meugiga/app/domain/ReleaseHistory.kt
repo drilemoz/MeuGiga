@@ -5,6 +5,10 @@ data class ReleaseNote(val version: String, val changes: List<String>)
 /** Fonte única das últimas novidades na tela automática e no histórico manual. */
 object ReleaseHistory {
     val releases = listOf(
+        ReleaseNote("0.1.9", listOf(
+            "Corrigidos os erros Kotlin que impediam gerar APK e AAB nos workflows Android CI e Signed APK.",
+            "Mantidos os calendários, Wi-Fi separado, Pix, diagnóstico de segundo plano e banco de dados.",
+        )),
         ReleaseNote("0.1.8", listOf(
             "Calendário para escolher um dia nos dados móveis e no Wi-Fi, mantendo os módulos separados.",
             "Me Pague um Café: Pix voluntário, QR Code local e opção de avaliar no Google Play.",

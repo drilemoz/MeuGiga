@@ -1,3 +1,28 @@
+# Validação da versão 0.1.9 (15/10/2026)
+
+## Problema confirmado pelos logs do GitHub Actions
+
+- `Android CI #5` falhou em `:app:compileDebugKotlin`.
+- `Android Signed APK #6` falhou em `:app:compileReleaseKotlin` e `:app:compileDebugKotlin`.
+- `BackgroundDiagnostics.kt`, linhas 57–61 da 0.1.8: cinco erros de smart cast de `info.first` (propriedade pública de `Triple` de outro módulo). Corrigido por captura em `val scheduledWorks` antes da análise do estado.
+- `InfoScreens.kt`, linhas 96 e 104 da 0.1.8: extensão Compose `fillMaxWidth` não importada. Corrigido o import.
+- A validação do keystore passou no workflow de assinatura antes do erro Kotlin; não alterar Secrets, alias ou certificado.
+
+## Validações locais realizadas
+
+- 57 testes Kotlin/JVM aprovados, incluindo dois novos testes da ordenação do histórico de versões.
+- Parser PSI aprovou 73 fontes Kotlin (produção e testes) sem erros sintáticos.
+- Versões e referências de release verificadas; arquivos XML/JSON/YAML íntegros; ZIP checado por CRC.
+- `./gradlew --offline :app:compileDebugKotlin` não executou: faltou a distribuição Gradle 8.13 e a rede local não resolve `services.gradle.org` (`UnknownHostException`). Isso **não** é validação de compilação Android. Os workflows CI e Signed APK devem ser executados novamente.
+
+## Regressão e compatibilidade
+
+- Confirmar build em CI: `gradle --no-daemon lintDebug testDebugUnitTest assembleDebug`.
+- Confirmar release: `gradle --no-daemon clean testDebugUnitTest lintRelease assembleRelease bundleRelease`, seguido de `apksigner verify`.
+- Verificar calendários, QR Pix, informações de segundo plano e navegação Sobre em Android real.
+- O APK da versão anterior deve ter o mesmo certificado para atualização sem desinstalação.
+- Room schema 2 e `applicationId br.com.meugiga.app` preservados; `versionName 0.1.9` e `versionCode 10`.
+
 # Validação da versão 0.1.8 (15/10/2026)
 
 Código-fonte: 55/55 testes unitários Kotlin/JVM aprovados com executor de asserções JUnit compatíveis,
