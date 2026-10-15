@@ -65,3 +65,5 @@ UIDs é informativa: se a soma supera o total, não exibimos um valor negativo
 como se fosse tráfego não atribuído. Nem sempre as consultas são comparáveis.
 
 Referência: https://developer.android.com/reference/android/app/usage/NetworkStatsManager
+
+Na 0.1.8, o Wi-Fi oferece calendário com dia selecionável por intervalo civil local; permanece sob demanda e fora da franquia móvel.

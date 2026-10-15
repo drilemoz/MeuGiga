@@ -49,6 +49,8 @@ class UsageSyncWorker(
             settings = settings,
         )
         container.notificationManager.evaluateAlerts(cycle, metrics, settings)
+        applicationContext.getSharedPreferences("meugiga_worker_status", Context.MODE_PRIVATE)
+            .edit().putLong("last_success_millis", System.currentTimeMillis()).apply()
         return Result.success()
     }
 }

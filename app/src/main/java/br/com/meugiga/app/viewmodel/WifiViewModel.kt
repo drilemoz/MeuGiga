@@ -16,12 +16,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 /** Leitura Wi-Fi apenas ao abrir a aba, mudar o filtro ou tocar em Atualizar. */
 enum class WifiReadError { PERMISSION, UNAVAILABLE, UNEXPECTED }
 
 data class WifiUiState(
     val selectedPeriod: WifiPeriod = WifiPeriod.TODAY,
+    val customDay: LocalDate? = null,
     val report: WifiUsageReport? = null,
     val refreshing: Boolean = false,
     val error: WifiReadError? = null,
@@ -42,13 +44,22 @@ class WifiViewModel(private val container: AppContainer) : ViewModel() {
         refresh()
     }
 
+    fun selectDay(day: LocalDate) {
+        if (day.isAfter(LocalDate.now())) return
+        _state.update {
+            it.copy(selectedPeriod = WifiPeriod.CUSTOM, customDay = day, report = null, error = null)
+        }
+        refresh()
+    }
+
     fun refresh() {
         readJob?.cancel()
         val selected = _state.value.selectedPeriod
+        val selectedDay = _state.value.customDay
         _state.update { it.copy(refreshing = true, error = null, errorMessage = null, report = null) }
         readJob = viewModelScope.launch {
             try {
-                val period = periods.resolve(selected)
+                val period = periods.resolve(selected, customDay = selectedDay)
                 val report = container.wifiUsageRepository.load(period)
                 _state.update { it.copy(report = report, refreshing = false) }
             } catch (cancelled: CancellationException) {

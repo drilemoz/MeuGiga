@@ -1,4 +1,4 @@
-# MeuGiga — publicação Android (0.1.7)
+# MeuGiga — publicação Android (0.1.8)
 
 ## CI (`android-ci.yml`)
 
@@ -14,9 +14,9 @@ Em pushes para `main`/`master` ou execução manual:
 2. Reconstrói o keystore apenas no diretório temporário.
 3. Executa testes, lint, `assembleRelease` e `bundleRelease`.
 4. Valida o APK com `apksigner`.
-5. Publica os artifacts `MeuGiga-0.1.7-release-signed.apk` e
-   `MeuGiga-0.1.7-release-signed.aab` por 30 dias no workflow.
-6. Cria prerelease GitHub com tag `meugiga-v0.1.7-<SHA7>`;
+5. Publica os artifacts `MeuGiga-0.1.8-release-signed.apk` e
+   `MeuGiga-0.1.8-release-signed.aab` por 30 dias no workflow.
+6. Cria prerelease GitHub com tag `meugiga-v0.1.8-<SHA7>`;
    não apaga nem substitui releases anteriores.
 
 Se um mesmo commit for executado novamente, a prerelease existente é

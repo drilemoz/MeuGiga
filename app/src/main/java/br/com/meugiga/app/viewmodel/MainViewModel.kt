@@ -137,7 +137,7 @@ class MainViewModel(
 
     fun selectPeriod(preset: PeriodPreset) {
         if (preset == PeriodPreset.CUSTOM) return
-        _state.update { it.copy(selectedPreset = preset) }
+        _state.update { it.copy(selectedPreset = preset, analysisReport = null) }
         refreshNow()
     }
 
@@ -148,6 +148,7 @@ class MainViewModel(
                 selectedPreset = PeriodPreset.CUSTOM,
                 customStart = start,
                 customEndInclusive = endInclusive,
+                analysisReport = null,
             )
         }
         refreshNow()

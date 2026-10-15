@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.8 — 15/10/2026
+
+- Calendário acessível por ícone nos filtros de consumo móvel e Wi-Fi, com seleção de um dia civil e dados do Android consultados no intervalo correto; Wi-Fi permanece separado.
+- Nova área Sobre → Me Pague um Café: chave Pix, cópia com confirmação, valores R$ 5, R$ 10, R$ 10,10 e livre, QR Code Pix estático local e avaliação opcional no Google Play.
+- Diagnóstico do trabalho WorkManager, otimização de bateria e data/hora da última consulta automática bem-sucedida, sem serviço permanente e sem solicitar privilégios especiais.
+- Sobre agora permite abrir novidades manualmente e consultar últimas três versões; banner automático continua aparecendo uma vez por atualização.
+- Mantidos applicationId, Room schema 2 e monitoramento móvel; versionName 0.1.8/versionCode 9.
+
 ## 0.1.7 — 15/10/2026
 
 - reorganização compacta da aba Wi-Fi: total em destaque, download e upload lado a lado, ícones uniformes e atualização no cabeçalho;

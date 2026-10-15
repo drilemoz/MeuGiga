@@ -54,6 +54,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import br.com.meugiga.app.domain.model.ThemeMode
+import br.com.meugiga.app.ui.components.BackgroundDiagnostics
 import br.com.meugiga.app.ui.components.MobileOnlyBadge
 import br.com.meugiga.app.ui.components.PlanEditorDialog
 import br.com.meugiga.app.utils.ByteFormatter
@@ -228,6 +229,11 @@ fun SettingsScreen(
                         )
                     }
                 }
+                HorizontalDivider(Modifier.padding(vertical = 10.dp))
+                BackgroundDiagnostics(
+                    intervalMinutes = state.settings.backgroundIntervalMinutes,
+                    hasUsageAccess = state.hasUsageAccess,
+                )
             }
         }
 

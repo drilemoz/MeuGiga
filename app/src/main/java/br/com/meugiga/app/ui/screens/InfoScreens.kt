@@ -71,7 +71,12 @@ fun PrivacyScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun AboutScreen(
+    onBack: () -> Unit,
+    onOpenCoffee: () -> Unit,
+    onOpenChanges: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     InfoScreenScaffold("Sobre o MeuGiga", onBack, modifier) { padding ->
         LazyColumn(
             modifier = Modifier.padding(padding),
@@ -87,6 +92,22 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 )
             }
             item { InfoCard("Versão", BuildConfig.VERSION_NAME) }
+            item {
+                Card(onClick = onOpenCoffee, modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(18.dp)) {
+                        Text("☕ Me Pague um Café", style = MaterialTheme.typography.titleMedium)
+                        Text("Apoio opcional por Pix, QR Code e avaliação no Google Play.")
+                    }
+                }
+            }
+            item {
+                Card(onClick = onOpenChanges, modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(18.dp)) {
+                        Text("Novidades e últimas versões", style = MaterialTheme.typography.titleMedium)
+                        Text("Consulte as três mudanças mais recentes a qualquer momento.")
+                    }
+                }
+            }
             item {
                 InfoCard(
                     "Tecnologia",
@@ -117,7 +138,7 @@ fun AboutScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun InfoScreenScaffold(
+internal fun InfoScreenScaffold(
     title: String,
     onBack: () -> Unit,
     modifier: Modifier,
@@ -156,3 +177,21 @@ private fun InfoCard(title: String, text: String) {
     }
 }
 
+
+@Composable
+fun RecentChangesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
+    InfoScreenScaffold("Novidades das versões", onBack, modifier) { padding ->
+        LazyColumn(modifier = Modifier.padding(padding),
+            contentPadding = PaddingValues(20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            br.com.meugiga.app.domain.ReleaseHistory.latestThree().forEach { release ->
+                item {
+                    InfoCard(
+                        "Versão ${release.version}",
+                        release.changes.joinToString(separator = "\n• ", prefix = "• "),
+                    )
+                }
+            }
+        }
+    }
+}

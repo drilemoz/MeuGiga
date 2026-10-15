@@ -49,12 +49,11 @@ fun PeriodFilterBar(
         PeriodPreset.THIRTY_DAYS to "30 dias",
         PeriodPreset.CYCLE to "Ciclo",
     )
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
+    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            modifier = Modifier.weight(1f).horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
         options.forEach { (preset, label) ->
             FilterChip(
                 selected = selected == preset,
@@ -69,6 +68,11 @@ fun PeriodFilterBar(
             leadingIcon = {
                 Icon(Icons.Rounded.DateRange, contentDescription = null)
             },
+        )
+        }
+        SingleDayPickerButton(
+            selectedDay = customStart?.takeIf { it == customEndInclusive && selected == PeriodPreset.CUSTOM },
+            onDaySelected = { onCustomSelected(it, it) },
         )
     }
 

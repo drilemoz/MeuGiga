@@ -4,7 +4,12 @@
 
 MeuGiga é um aplicativo Android nativo que acompanha o consumo de **dados móveis** e oferece uma consulta de **Wi-Fi em uma aba independente**. Wi-Fi não participa da franquia, alertas, gráficos ou histórico móvel. Não usa VPN, não bloqueia internet, não limpa o aparelho e não inclui publicidade ou rastreamento.
 
-## Estado da versão 0.1.7
+## Estado da versão 0.1.8
+
+- Calendário para consultar um dia de uso móvel ou Wi-Fi, com intervalos locais e módulos isolados.
+- Sobre → Me Pague um Café com Pix estático e QR gerado localmente. Confira o destinatário em seu banco; nenhum pagamento é processado pelo aplicativo.
+- Diagnóstico do agendamento WorkManager, orientações de bateria e últimos registros de sucesso automático.
+- Histórico em Sobre com as três últimas versões; aviso de novidades uma vez por atualização.
 
 - resumo compacto do ciclo atual com datas de início e fim;
 - franquia limitada ou plano sem limite definido;
@@ -13,7 +18,7 @@ MeuGiga é um aplicativo Android nativo que acompanha o consumo de **dados móve
 - ranking por aplicativo, distinguindo apps removidos, tethering e sistema;
 - busca de aplicativos por nome ou identificador de pacote;
 - detalhes por aplicativo com histórico e intervalos fornecidos pelo Android;
-- filtros Hoje, Ontem, 7 dias, 30 dias, Ciclo e Personalizado;
+- filtros Hoje, Ontem, 7 dias, 30 dias, Ciclo, Personalizado e calendário de dia único (também no Resumo);
 - média diária calculada pelos dias efetivamente cobertos pelo período, sem duplicar o dia final;
 - cache e histórico local em Room, mantendo buckets que atravessam a meia-noite como intervalos separados nos gráficos (sem divisão fictícia entre dias);
 - atualização em primeiro plano a cada 60 segundos;
@@ -24,7 +29,7 @@ MeuGiga é um aplicativo Android nativo que acompanha o consumo de **dados móve
 - onboarding de três etapas com rolagem em telas compactas;
 - tela de novidades exibida uma vez após cada atualização instalada;
 - exportação manual de relatório CSV completo por período, via seletor de arquivos do Android, sem envio automático;
-- aba **Wi-Fi** independente, com cartões compactos para total/download/upload, filtros Hoje/Ontem/7/30 dias, busca e ordenação de aplicativos e detalhes individuais por UID quando o Android permitir;
+- aba **Wi-Fi** independente, com cartões compactos para total/download/upload, filtros Hoje/Ontem/7/30 dias e calendário de dia único, busca e ordenação de aplicativos e detalhes individuais por UID quando o Android permitir;
 - Wi-Fi consultado apenas ao abrir a aba, mudar filtro ou atualizar, sem gráficos, persistência de histórico ou worker Wi-Fi;
 - diferença entre total Wi-Fi e soma de aplicativos mostrada somente quando os dados permitem um cálculo não negativo;
 - nenhum cadastro, login ou servidor.
@@ -40,6 +45,7 @@ MeuGiga é um aplicativo Android nativo que acompanha o consumo de **dados móve
 - UsageStatsManager e AppOpsManager para verificar o acesso especial;
 - PackageManager com visibilidade limitada a apps iniciáveis;
 - WorkManager 2.11.1;
+- ZXing Core 3.5.3 para gerar QR Code Pix localmente;
 - Android Gradle Plugin 8.13.2 e Gradle 8.13;
 - minSdk 23, compileSdk 36 e targetSdk 36.
 
@@ -216,3 +222,12 @@ Antes da publicação, hospede a política de privacidade em uma URL pública, c
 - [Trabalho periódico com WorkManager](https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started/define-work)
 - [Visibilidade de pacotes](https://developer.android.com/training/package-visibility/declaring)
 - [Requisitos de target API da Google Play](https://developer.android.com/google/play/requirements/target-sdk)
+
+## Me Pague um Café
+
+A chave de Pix estático é `drilemoz@gmail.com`. O QR segue BR Code e usa identificação
+provisória `ADRIEDSON LEMOS` / `IGUATAMA`. Antes da publicação/distribuição de
+pagamentos reais, confirme que o nome e a cidade correspondem aos dados reais da conta;
+o usuário deve verificar o beneficiário no banco antes de transferir. O aplicativo não
+recebe confirmação de pagamento nem oferece benefícios em troca da contribuição.
+O botão Google Play abre a ficha deste pacote, quando ela estiver disponível.

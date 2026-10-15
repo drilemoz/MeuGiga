@@ -34,6 +34,9 @@ import br.com.meugiga.app.ui.theme.GigaBlue
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import br.com.meugiga.app.domain.model.AppUsage
+import br.com.meugiga.app.ui.components.SingleDayPickerButton
+import br.com.meugiga.app.domain.model.PeriodPreset
+import java.time.LocalDate
 import br.com.meugiga.app.ui.components.AppUsageRow
 import br.com.meugiga.app.ui.components.CompactMetric
 import br.com.meugiga.app.ui.components.CompactMetricsGrid
@@ -56,6 +59,7 @@ fun HomeScreen(
     onGrantUsageAccess: () -> Unit,
     onRefresh: () -> Unit,
     onOpenApp: (Int) -> Unit,
+    onSelectDay: (LocalDate, LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val report = state.cycleReport
@@ -72,7 +76,16 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         item {
-            Text("MeuGiga", style = MaterialTheme.typography.headlineMedium)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                Text("MeuGiga", style = MaterialTheme.typography.headlineMedium)
+                SingleDayPickerButton(
+                    selectedDay = state.customStart.takeIf {
+                        state.selectedPreset == PeriodPreset.CUSTOM && it == state.customEndInclusive
+                    },
+                    onDaySelected = { onSelectDay(it, it) },
+                )
+            }
             Text(
                 "Seu consumo de dados, sem complicação.",
                 style = MaterialTheme.typography.bodyLarge,
@@ -86,6 +99,30 @@ fun HomeScreen(
             item { PermissionRequiredCard(onGrantUsageAccess) }
         }
         state.error?.let { error -> item { UsageErrorCard(error) } }
+
+        if (state.selectedPreset == PeriodPreset.CUSTOM &&
+            state.customStart != null && state.customStart == state.customEndInclusive) {
+            item {
+                val dayReport = state.analysisReport
+                Card(shape = RoundedCornerShape(18.dp)) {
+                    Column(Modifier.fillMaxWidth().padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text("Dados móveis em ${state.customStart.format(dateFormatter)}",
+                            style = MaterialTheme.typography.titleMedium)
+                        if (dayReport == null) {
+                            Text(if (state.isRefreshing) "Consultando os dados do dia…"
+                                else "Sem leitura disponível para este dia.")
+                        } else {
+                            Text("Total: ${ByteFormatter.format(dayReport.totalBytes)} · " +
+                                "Download: ${ByteFormatter.format(dayReport.totalRxBytes)} · " +
+                                "Upload: ${ByteFormatter.format(dayReport.totalTxBytes)}")
+                        }
+                        Text("Consulta histórica independente do total do ciclo acima.",
+                            style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        }
 
         item {
             PlanHero(

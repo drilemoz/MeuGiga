@@ -33,6 +33,24 @@ class WifiPeriodCalculatorTest {
         assertEquals(now.toEpochMilli(), result.endMillis)
     }
 
+    @Test fun `dia personalizado passado cobre intervalo local completo`() {
+        val chosen = LocalDate.of(2026, 10, 10)
+        val result = periods.resolve(WifiPeriod.CUSTOM, customDay = chosen)
+        assertEquals(chosen.atStartOfDay(zone).toInstant().toEpochMilli(), result.startMillis)
+        assertEquals(chosen.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli(), result.endMillis)
+        assertTrue(result.cacheKey.startsWith("wifi:CUSTOM:"))
+    }
+
+    @Test fun `dia personalizado atual termina agora`() {
+        val result = periods.resolve(WifiPeriod.CUSTOM, customDay = LocalDate.of(2026, 10, 14))
+        assertEquals(now.toEpochMilli(), result.endMillis)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `data futura nao permitida`() {
+        periods.resolve(WifiPeriod.CUSTOM, customDay = LocalDate.of(2026, 10, 15))
+    }
+
     @Test fun `trinta dias incluem dia atual e vinte nove anteriores`() {
         val result = periods.resolve(WifiPeriod.THIRTY_DAYS)
         assertEquals(LocalDate.of(2026, 9, 15).atStartOfDay(zone).toInstant().toEpochMilli(), result.startMillis)

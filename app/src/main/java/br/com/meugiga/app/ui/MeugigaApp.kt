@@ -63,6 +63,7 @@ fun MeugigaApp(
     onWifiOpen: () -> Unit,
     onWifiRefresh: () -> Unit,
     onWifiPeriodSelected: (WifiPeriod) -> Unit,
+    onWifiDaySelected: (LocalDate) -> Unit,
     onGrantUsageAccess: () -> Unit,
     onRefresh: () -> Unit,
     onPresetSelected: (PeriodPreset) -> Unit,
@@ -116,6 +117,7 @@ fun MeugigaApp(
                     onGrantUsageAccess,
                     onRefresh,
                     onOpenApp = { navController.navigate("app/$it") },
+                    onSelectDay = onCustomSelected,
                 )
             }
             composable("apps") {
@@ -143,6 +145,7 @@ fun MeugigaApp(
                     state = wifiState,
                     onOpen = onWifiOpen,
                     onSelectPeriod = onWifiPeriodSelected,
+                    onSelectDay = onWifiDaySelected,
                     onRefresh = onWifiRefresh,
                     onGrantUsageAccess = onGrantUsageAccess,
                     onOpenApp = { navController.navigate("wifi-app/$it") },
@@ -182,8 +185,18 @@ fun MeugigaApp(
             composable("privacy") {
                 PrivacyScreen(onBack = navController::navigateUp)
             }
+            composable("coffee") {
+                br.com.meugiga.app.ui.screens.CoffeeScreen(onBack = navController::navigateUp)
+            }
+            composable("changes") {
+                br.com.meugiga.app.ui.screens.RecentChangesScreen(onBack = navController::navigateUp)
+            }
             composable("about") {
-                AboutScreen(onBack = navController::navigateUp)
+                AboutScreen(
+                    onBack = navController::navigateUp,
+                    onOpenCoffee = { navController.navigate("coffee") },
+                    onOpenChanges = { navController.navigate("changes") },
+                )
             }
         }
     }

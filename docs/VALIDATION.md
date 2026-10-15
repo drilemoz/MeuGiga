@@ -1,3 +1,18 @@
+# Validação da versão 0.1.8 (15/10/2026)
+
+Código-fonte: 55/55 testes unitários Kotlin/JVM aprovados com executor de asserções JUnit compatíveis,
+72 arquivos Kotlin parseados sem erros sintáticos via PSI, recursos XML/JSON/YAML validados e ZIP/CRC íntegros.
+A tentativa de `./gradlew :app:testDebugUnitTest :app:assembleDebug --offline` foi bloqueada por
+`java.net.UnknownHostException: services.gradle.org` antes do build; compilação Android
+completa e interface em dispositivo dependem do GitHub Actions/Android SDK.
+Verifique em CI a nova dependência `com.google.zxing:core:3.5.3`.
+
+- Conferir calendário por dia nos dados móveis e Wi-Fi, limites no futuro, fuso, virada do dia e mudança de horário de verão.
+- Conferir Pix QR Code em app bancário real antes da publicação, titular/nome/cidade e valores sugeridos/livres.
+- Conferir navegação Sobre → Café, Sobre → Novidades e aviso exibido uma única vez na atualização.
+- Conferir diagnóstico WorkManager em aparelhos Xiaomi/Redmi com bateria otimizada e restrições do sistema.
+- Room schema 2 mantido, versionCode 9, versionName 0.1.8.
+
 # Validação da versão 0.1.7 (15/10/2026)
 
 ## Implementação

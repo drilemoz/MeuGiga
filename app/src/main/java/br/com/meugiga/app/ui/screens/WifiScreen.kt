@@ -57,6 +57,7 @@ import br.com.meugiga.app.domain.WifiPeriod
 import br.com.meugiga.app.domain.WifiRankingPresentation
 import br.com.meugiga.app.domain.WifiSortOrder
 import br.com.meugiga.app.domain.model.AppUsage
+import br.com.meugiga.app.ui.components.SingleDayPickerButton
 import br.com.meugiga.app.ui.components.AppIcon
 import br.com.meugiga.app.utils.ByteFormatter
 import br.com.meugiga.app.viewmodel.WifiReadError
@@ -79,6 +80,7 @@ fun WifiScreen(
     state: WifiUiState,
     onOpen: () -> Unit,
     onSelectPeriod: (WifiPeriod) -> Unit,
+    onSelectDay: (java.time.LocalDate) -> Unit,
     onRefresh: () -> Unit,
     onGrantUsageAccess: () -> Unit,
     onOpenApp: (Int) -> Unit,
@@ -122,14 +124,27 @@ fun WifiScreen(
             }
         }
         item {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(wifiPresets) { (period, label) ->
-                    FilterChip(
-                        selected = state.selectedPeriod == period,
-                        onClick = { onSelectPeriod(period) },
-                        label = { Text(label) },
-                    )
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                LazyRow(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(wifiPresets) { (period, label) ->
+                        FilterChip(
+                            selected = state.selectedPeriod == period,
+                            onClick = { onSelectPeriod(period) },
+                            label = { Text(label) },
+                        )
+                    }
                 }
+                SingleDayPickerButton(
+                    selectedDay = state.customDay.takeIf { state.selectedPeriod == WifiPeriod.CUSTOM },
+                    onDaySelected = onSelectDay,
+                )
+            }
+            if (state.selectedPeriod == WifiPeriod.CUSTOM) {
+                Text(
+                    "Dia selecionado: ${state.customDay?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: ""}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
             }
         }
         if (state.refreshing) {

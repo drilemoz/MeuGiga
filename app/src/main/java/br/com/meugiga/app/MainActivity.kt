@@ -104,6 +104,7 @@ class MainActivity : ComponentActivity() {
                             onWifiOpen = wifiViewModel::onOpened,
                             onWifiRefresh = wifiViewModel::refresh,
                             onWifiPeriodSelected = wifiViewModel::selectPeriod,
+                            onWifiDaySelected = wifiViewModel::selectDay,
                             onGrantUsageAccess = ::openUsageAccessSettings,
                             onRefresh = mainViewModel::refreshNow,
                             onPresetSelected = mainViewModel::selectPeriod,
