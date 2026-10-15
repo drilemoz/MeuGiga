@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.7 — 15/10/2026
+
+- reorganização compacta da aba Wi-Fi: total em destaque, download e upload lado a lado, ícones uniformes e atualização no cabeçalho;
+- ranking Wi-Fi pesquisável por nome, pacote ou UID e ordenável por total, download, upload ou nome;
+- cartões do ranking com barras contínuas sem ponto decorativo, detalhes por aplicativo acessíveis por toque;
+- tela de detalhes Wi-Fi separada, com período, total, download, upload, UID, participação e observação sobre UIDs compartilhados;
+- identificação transparente da diferença entre total do aparelho e soma de UIDs quando calculável, sem criar tráfego artificial;
+- navegação inferior com ícones padronizados em 24 dp, sem alterar a funcionalidade das outras abas;
+- sem mudanças na assinatura, permissões, schema Room 2, franquia ou gráficos de dados móveis;
+- versão 0.1.7 / versionCode 8 e nove novos testes de ranking e reconciliação.
+
 ## 0.1.6 — 14/10/2026
 
 - nova aba Wi-Fi na barra de navegação, sem gráficos e com total, download, upload, períodos Hoje/Ontem/7/30 dias e ranking por aplicativo;

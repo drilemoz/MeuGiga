@@ -1,31 +1,36 @@
-# Validação da versão 0.1.6 (14/10/2026)
+# Validação da versão 0.1.7 (15/10/2026)
 
-## Verificações locais
+## Implementação
 
-- **38/38 testes Kotlin/JVM aprovados** por compilação via `kotlinc` e executor
-  local de asserções compatíveis com JUnit: são os 30 anteriores mais 8 novos
-  testes de período e agregação Wi-Fi.
-- O cálculo dos períodos Wi-Fi usa fuso local, trata Ontem como intervalo
-  fechado no início e aberto no fim, inclui o dia atual nos filtros 7/30 dias.
-- O ranking agrega UIDs repetidos, exclui UID_ALL e não soma bytes do aparelho
-  aos bytes de aplicativos, evitando duplicação.
-- Verificações adicionais: sintaxe Kotlin via PSI, consistência de versões,
-  XML/JSON, YAML dos workflows, estrutura do ZIP e checksum SHA-256.
+- Aba Wi-Fi compacta: indicador total em largura completa; download e upload alinhados.
+- Atualização pelo botão do cabeçalho, mantendo consultas sob demanda.
+- Ranking pesquisável por nome, pacote, pacote compartilhado ou UID; ordenável
+  por total, download, upload ou nome sem consultar novamente a rede.
+- Cada aplicativo abre uma página própria com download, upload, total, porcentagem,
+  UID, pacote e aviso quando há múltiplos pacotes sob um UID.
+- As barras do ranking não usam indicador circular de extremidade.
+- Divergências de somatório por UID não geram tráfego fictício.
+- Wi-Fi não persiste no Room, não entra em gráficos móveis, franquia ou WorkManager.
 
-## Pendente
+## Testes
 
-- Sem Android SDK configurado no ambiente de entrega: `assembleDebug`, lint
-  Android, `assembleRelease`, `bundleRelease` e testes em aparelho não
-  foram executados. O GitHub Actions contém as etapas de CI Android.
-- Testar `querySummaryForDevice(TYPE_WIFI)` e `querySummary(TYPE_WIFI)` em aparelhos
-  e versões Android reais, inclusive cenários de permissão negada/revogada,
-  pouca memória, ausência de estatísticas ou bloqueio do ranking por UID.
-- Verificar comportamento da navegação com cinco abas em telas estreitas,
-  rotação de tela e acessibilidade.
+- **47/47 testes Kotlin/JVM aprovados** em compilação isolada com `kotlinc`
+  e executor local de asserções compatíveis com JUnit (38 anteriores + 9 novos).
+- Nove testes novos aprovaram filtro, quatro ordenações, busca por nome/pacote/UID,
+  lista vazia, diferença disponível e divergência não comparável.
+- **66 arquivos Kotlin** (fontes e testes) analisados pelo parser PSI, sem erros sintáticos.
+- Versões, XML/JSON, workflows e integridade do ZIP verificados na entrega.
+
+## Pendências
+
+- Android SDK e Gradle não disponíveis neste ambiente: build Android completo e
+  testes instrumentados em aparelho permanecem pendentes.
+- Testar rotação, cinco ícones de navegação, telas estreitas, nomes longos,
+  acessibilidade, diferenças por UID e permissão revogada no Android real.
 
 ## Compatibilidade
 
-- `applicationId`: `br.com.meugiga.app` (inalterado).
-- `versionName`: `0.1.6`, `versionCode`: `7`.
-- Room schema `2`, sem migração ou exclusão de histórico móvel.
-- O ZIP é código-fonte, não APK instalável; assinar releases com a mesma chave.
+- `applicationId`: `br.com.meugiga.app`.
+- `versionName`: `0.1.7`, `versionCode`: `8`.
+- Room schema `2`; histórico móvel, assinatura e permissões inalterados.
+- O ZIP contém código-fonte, não um APK assinado.

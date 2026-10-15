@@ -1,6 +1,6 @@
 # Política de Privacidade — MeuGiga
 
-**Última atualização: 14 de outubro de 2026**
+**Última atualização: 15 de outubro de 2026**
 
 O MeuGiga foi desenvolvido com processamento local como princípio central.
 
@@ -18,7 +18,7 @@ O histórico e as preferências ficam no armazenamento privado do aplicativo no 
 
 ## Dados não coletados
 
-O MeuGiga não exige nem coleta cadastro, nome, e-mail, telefone, localização, contatos ou identificadores do assinante. Não monitora tráfego Wi‑Fi e não inclui publicidade ou SDK de rastreamento.
+O MeuGiga não exige nem coleta cadastro, nome, e-mail, telefone, localização, contatos ou identificadores do assinante. Consulta o volume de Wi-Fi somente sob demanda na aba independente, sem inspecionar o conteúdo dos pacotes, e não inclui publicidade ou SDK de rastreamento.
 
 ## Permissões
 

@@ -4,7 +4,7 @@
 
 MeuGiga é um aplicativo Android nativo que acompanha o consumo de **dados móveis** e oferece uma consulta de **Wi-Fi em uma aba independente**. Wi-Fi não participa da franquia, alertas, gráficos ou histórico móvel. Não usa VPN, não bloqueia internet, não limpa o aparelho e não inclui publicidade ou rastreamento.
 
-## Estado da versão 0.1.6
+## Estado da versão 0.1.7
 
 - resumo compacto do ciclo atual com datas de início e fim;
 - franquia limitada ou plano sem limite definido;
@@ -24,8 +24,9 @@ MeuGiga é um aplicativo Android nativo que acompanha o consumo de **dados móve
 - onboarding de três etapas com rolagem em telas compactas;
 - tela de novidades exibida uma vez após cada atualização instalada;
 - exportação manual de relatório CSV completo por período, via seletor de arquivos do Android, sem envio automático;
-- nova aba **Wi-Fi** independente, com total/download/upload, filtros Hoje/Ontem/7/30 dias e ranking por app quando o Android disponibilizar;
+- aba **Wi-Fi** independente, com cartões compactos para total/download/upload, filtros Hoje/Ontem/7/30 dias, busca e ordenação de aplicativos e detalhes individuais por UID quando o Android permitir;
 - Wi-Fi consultado apenas ao abrir a aba, mudar filtro ou atualizar, sem gráficos, persistência de histórico ou worker Wi-Fi;
+- diferença entre total Wi-Fi e soma de aplicativos mostrada somente quando os dados permitem um cálculo não negativo;
 - nenhum cadastro, login ou servidor.
 
 ## Tecnologias
@@ -72,7 +73,7 @@ alertas e o WorkManager continuam exclusivos da rede móvel.
 
 O leitor separado `AndroidWifiUsageReader` usa `ConnectivityManager.TYPE_WIFI`
 com `subscriberId = null`, para consultar **todas as redes Wi-Fi agregadas**.
-A tela Wi-Fi permite Hoje, Ontem, 7 dias ou 30 dias, sem depender do ciclo do
+A tela Wi-Fi permite Hoje, Ontem, 7 dias ou 30 dias, busca e ordenação, sem depender do ciclo do
 plano. O total do aparelho vem de `querySummaryForDevice`, e o ranking por UID
 vem de `querySummary`, caso disponibilizado pelo fabricante e permissão.
 Não são atribuídos bytes de Wi-Fi a aplicativos móveis nem salvos históricos

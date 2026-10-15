@@ -9,10 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Wifi
-import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -73,20 +72,27 @@ fun WhatsNewScreen(
             item {
                 UpdateItem(
                     icon = Icons.Rounded.Wifi,
-                    title = "Nova aba Wi-Fi",
-                    text = "Consulte o consumo Wi-Fi, download e upload e ranking por aplicativo em " +
-                        "Hoje, Ontem, 7 ou 30 dias, sem entrar nos gráficos e na franquia móvel.",
+                    title = "Wi-Fi mais organizado",
+                    text = "Total em destaque, download e upload lado a lado, ícones alinhados, " +
+                        "atualização no cabeçalho e cartões menores.",
                 )
             }
             item {
                 UpdateItem(
-                    icon = Icons.Rounded.Refresh,
-                    title = "Leitura sob demanda",
-                    text = "A consulta Wi-Fi só ocorre ao abrir a aba, mudar o período ou atualizar. " +
-                        "Nenhum dado Wi-Fi é salvo no histórico móvel ou monitorado em segundo plano.",
+                    icon = Icons.Rounded.Search,
+                    title = "Busca e ordenação",
+                    text = "Procure aplicativos por nome, pacote ou UID e ordene por total, " +
+                        "download, upload ou nome, sem nova consulta ao Android.",
                 )
             }
-
+            item {
+                UpdateItem(
+                    icon = Icons.Rounded.Info,
+                    title = "Detalhes individuais Wi-Fi",
+                    text = "Toque em um aplicativo para ver seus bytes recebidos, enviados e " +
+                        "participação. O Wi-Fi continua separado dos gráficos móveis.",
+                )
+            }
         }
     }
 }

@@ -59,4 +59,9 @@ Não gravam bytes no Room, não alimentam franquia/gráficos/alertas móveis e
 não executam em background. Wi-Fi pode incluir tráfego de rede local; o
 histórico depende do Android e não distingue SSIDs nem mede velocidade.
 
+A versão 0.1.7 adiciona busca por nome/pacote/UID, ordenação local e detalhes
+de cada UID na leitura atual. A diferença entre total do aparelho e soma dos
+UIDs é informativa: se a soma supera o total, não exibimos um valor negativo
+como se fosse tráfego não atribuído. Nem sempre as consultas são comparáveis.
+
 Referência: https://developer.android.com/reference/android/app/usage/NetworkStatsManager

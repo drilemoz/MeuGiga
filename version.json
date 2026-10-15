@@ -2,8 +2,8 @@
   "appName": "MeuGiga",
   "projectName": "meugiga",
   "applicationId": "br.com.meugiga.app",
-  "versionName": "0.1.6",
-  "versionCode": 7,
+  "versionName": "0.1.7",
+  "versionCode": 8,
   "minSdk": 23,
   "compileSdk": 36,
   "targetSdk": 36

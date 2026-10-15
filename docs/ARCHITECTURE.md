@@ -19,6 +19,11 @@ consulta apenas `TYPE_WIFI` usando `querySummaryForDevice` (total) e, quando
 possível, `querySummary` (UIDs). `WifiUsageCalculator` agrega e classifica o
 ranking sem somar `UID_ALL` e usa o total do dispositivo como denominador.
 
+O `WifiRankingPresentation` pesquisa e ordena o ranking localmente e calcula a diferença
+entre total do dispositivo e soma dos aplicativos apenas se não houver sobreposição
+numérica. `WifiAppDetailScreen` exibe o UID selecionado sem consultar os dados
+móveis nem construir um histórico Wi-Fi.
+
 O relatório Wi-Fi só fica no StateFlow em memória. Não usa Room para bytes,
 nem o fluxo móvel de cache, gráficos, franquia, notificações ou WorkManager.
 `PackageCatalog` é compartilhado apenas para resolver nomes de aplicativos.

@@ -2,6 +2,7 @@ package br.com.meugiga.app.ui
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -34,6 +36,7 @@ import br.com.meugiga.app.ui.screens.HomeScreen
 import br.com.meugiga.app.ui.screens.PrivacyScreen
 import br.com.meugiga.app.ui.screens.SettingsScreen
 import br.com.meugiga.app.ui.screens.WifiScreen
+import br.com.meugiga.app.ui.screens.WifiAppDetailScreen
 import br.com.meugiga.app.viewmodel.MainUiState
 import br.com.meugiga.app.viewmodel.WifiUiState
 import br.com.meugiga.app.domain.WifiPeriod
@@ -92,7 +95,8 @@ fun MeugigaApp(
                                     restoreState = true
                                 }
                             },
-                            icon = { Icon(destination.icon, contentDescription = null) },
+                            icon = { Icon(destination.icon, contentDescription = null, modifier = Modifier.size(24.dp)) },
+                            alwaysShowLabel = true,
                             label = { Text(destination.label) },
                         )
                     }
@@ -141,6 +145,15 @@ fun MeugigaApp(
                     onSelectPeriod = onWifiPeriodSelected,
                     onRefresh = onWifiRefresh,
                     onGrantUsageAccess = onGrantUsageAccess,
+                    onOpenApp = { navController.navigate("wifi-app/$it") },
+                )
+            }
+            composable("wifi-app/{uid}") { entry ->
+                val uid = entry.arguments?.getString("uid")?.toIntOrNull() ?: return@composable
+                WifiAppDetailScreen(
+                    uid = uid,
+                    state = wifiState,
+                    onBack = navController::navigateUp,
                 )
             }
             composable("settings") {
