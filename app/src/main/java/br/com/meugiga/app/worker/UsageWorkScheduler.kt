@@ -11,8 +11,12 @@ class UsageWorkScheduler(
     context: Context,
     private val workManager: WorkManager = WorkManager.getInstance(context),
 ) {
-    fun schedule(intervalMinutes: Int) {
-        val safeInterval = intervalMinutes.coerceAtLeast(15).toLong()
+    fun configure(intervalMinutes: Int, enabled: Boolean) {
+        if (!enabled || intervalMinutes !in setOf(15, 30, 60)) {
+            workManager.cancelUniqueWork(UNIQUE_WORK_NAME)
+            return
+        }
+        val safeInterval = intervalMinutes.toLong()
         val request = PeriodicWorkRequestBuilder<UsageSyncWorker>(
             safeInterval,
             TimeUnit.MINUTES,

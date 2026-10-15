@@ -9,6 +9,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import br.com.meugiga.app.domain.AlertThresholds
+import br.com.meugiga.app.domain.BackgroundSyncPolicy
 import br.com.meugiga.app.domain.model.AppSettings
 import br.com.meugiga.app.domain.model.PlanSettings
 import br.com.meugiga.app.domain.model.ThemeMode
@@ -58,15 +60,14 @@ class SettingsRepository(context: Context) {
     }
 
     suspend fun setAlerts(enabled: Boolean, thresholds: Set<Int>) {
-        val valid = thresholds.filter { it in 1..100 }.toSortedSet()
         dataStore.edit {
             it[Keys.ALERTS_ENABLED] = enabled
-            it[Keys.ALERT_THRESHOLDS] = valid.joinToString(",")
+            it[Keys.ALERT_THRESHOLDS] = AlertThresholds.encode(thresholds)
         }
     }
 
     suspend fun setBackgroundInterval(minutes: Int) {
-        require(minutes in setOf(15, 30, 60))
+        require(minutes in BackgroundSyncPolicy.supportedIntervals)
         dataStore.edit { it[Keys.BACKGROUND_INTERVAL] = minutes }
     }
 
@@ -97,12 +98,12 @@ class SettingsRepository(context: Context) {
     suspend fun markAlertsSent(cycleKey: String, thresholds: Set<Int>) {
         dataStore.edit { preferences ->
             val existing = if (preferences[Keys.LAST_ALERT_CYCLE] == cycleKey) {
-                parseThresholds(preferences[Keys.SENT_THRESHOLDS])
+                AlertThresholds.parse(preferences[Keys.SENT_THRESHOLDS])
             } else {
                 emptySet()
             }
             preferences[Keys.LAST_ALERT_CYCLE] = cycleKey
-            preferences[Keys.SENT_THRESHOLDS] = (existing + thresholds).sorted().joinToString(",")
+            preferences[Keys.SENT_THRESHOLDS] = AlertThresholds.encode(existing + thresholds)
         }
     }
 
@@ -118,25 +119,17 @@ class SettingsRepository(context: Context) {
             onboardingComplete = preferences[Keys.ONBOARDING_COMPLETE] ?: false,
             persistentNotificationEnabled = preferences[Keys.PERSISTENT_NOTIFICATION] ?: false,
             alertsEnabled = preferences[Keys.ALERTS_ENABLED] ?: false,
-            alertThresholds = parseThresholds(preferences[Keys.ALERT_THRESHOLDS])
-                .ifEmpty { setOf(50, 75, 80, 90, 100) },
+            alertThresholds = AlertThresholds.decode(preferences[Keys.ALERT_THRESHOLDS]),
             backgroundIntervalMinutes = (preferences[Keys.BACKGROUND_INTERVAL] ?: 30)
-                .takeIf { it in setOf(15, 30, 60) } ?: 30,
+                .takeIf { it in BackgroundSyncPolicy.supportedIntervals } ?: 30,
             themeMode = runCatching {
                 ThemeMode.valueOf(preferences[Keys.THEME] ?: ThemeMode.SYSTEM.name)
             }.getOrDefault(ThemeMode.SYSTEM),
             lastAlertCycleKey = preferences[Keys.LAST_ALERT_CYCLE],
-            sentAlertThresholds = parseThresholds(preferences[Keys.SENT_THRESHOLDS]),
+            sentAlertThresholds = AlertThresholds.parse(preferences[Keys.SENT_THRESHOLDS]),
             lastSeenWhatsNewVersionCode = preferences[Keys.LAST_SEEN_WHATS_NEW_VERSION_CODE] ?: 0,
         )
     }
-
-    private fun parseThresholds(raw: String?): Set<Int> = raw
-        .orEmpty()
-        .split(',')
-        .mapNotNull { it.trim().toIntOrNull() }
-        .filter { it in 1..100 }
-        .toSet()
 
     private object Keys {
         val PLAN_BYTES = longPreferencesKey("plan_bytes")

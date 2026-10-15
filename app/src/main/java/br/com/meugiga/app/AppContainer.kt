@@ -2,10 +2,12 @@ package br.com.meugiga.app
 
 import android.content.Context
 import br.com.meugiga.app.data.database.MeugigaDatabase
+import br.com.meugiga.app.data.networkstats.AndroidWifiUsageReader
 import br.com.meugiga.app.data.networkstats.AndroidNetworkStatsReader
 import br.com.meugiga.app.data.networkstats.UsageAccessController
 import br.com.meugiga.app.data.repository.PackageCatalog
 import br.com.meugiga.app.data.repository.UsageRepository
+import br.com.meugiga.app.data.repository.WifiUsageRepository
 import br.com.meugiga.app.domain.PeriodCalculator
 import br.com.meugiga.app.domain.PlanCalculator
 import br.com.meugiga.app.notification.UsageNotificationManager
@@ -20,10 +22,15 @@ class AppContainer(context: Context) {
     val usageAccessController = UsageAccessController(appContext)
     val planCalculator = PlanCalculator()
     val periodCalculator = PeriodCalculator()
+    private val packageCatalog = PackageCatalog(appContext, database.mobileUsageDao())
+    val wifiUsageRepository = WifiUsageRepository(
+        reader = AndroidWifiUsageReader(appContext, usageAccessController),
+        packageCatalog = packageCatalog,
+    )
     val usageRepository = UsageRepository(
         reader = AndroidNetworkStatsReader(appContext, usageAccessController),
         dao = database.mobileUsageDao(),
-        packageCatalog = PackageCatalog(appContext, database.mobileUsageDao()),
+        packageCatalog = packageCatalog,
     )
     val workScheduler = UsageWorkScheduler(appContext)
     val notificationManager = UsageNotificationManager(appContext, settingsRepository)

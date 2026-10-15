@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import br.com.meugiga.app.MeugigaApplication
+import br.com.meugiga.app.domain.BackgroundSyncPolicy
 import br.com.meugiga.app.domain.model.PeriodPreset
 import kotlinx.coroutines.flow.first
 
@@ -15,6 +16,12 @@ class UsageSyncWorker(
         val application = applicationContext as? MeugigaApplication ?: return Result.failure()
         val container = application.container
         val settings = container.settingsRepository.settings.first()
+        if (!BackgroundSyncPolicy.shouldSchedule(
+                settings.onboardingComplete,
+                container.usageAccessController.hasAccess(),
+                settings.backgroundIntervalMinutes,
+            )
+        ) return Result.success()
         val cycle = container.planCalculator.currentCycle(settings.plan)
         val cyclePeriod = container.periodCalculator.resolve(PeriodPreset.CYCLE, cycle)
         val todayPeriod = container.periodCalculator.resolve(PeriodPreset.TODAY, cycle)

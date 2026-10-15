@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -13,10 +14,12 @@ import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.DataUsage
+import androidx.compose.material.icons.rounded.FileDownload
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +51,7 @@ fun AppsScreen(
     onCustomSelected: (LocalDate, LocalDate) -> Unit,
     onOpenApp: (Int) -> Unit,
     onRefresh: () -> Unit,
+    onExportCsv: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val report = state.analysisReport
@@ -116,6 +120,23 @@ fun AppsScreen(
             )
         }
 
+        item {
+            OutlinedButton(
+                onClick = onExportCsv,
+                enabled = report != null && report.capturedAtMillis > 0L && !state.isRefreshing,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(Icons.Rounded.FileDownload, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Exportar relatório CSV")
+            }
+            Text(
+                "Salva todos os aplicativos do período selecionado, mesmo com uma busca ativa. " +
+                    "Você escolhe onde salvar o arquivo.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         if (apps.isNotEmpty()) {
             item {
                 OutlinedTextField(

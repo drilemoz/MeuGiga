@@ -8,6 +8,7 @@ import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -32,7 +33,10 @@ import br.com.meugiga.app.ui.screens.HistoryScreen
 import br.com.meugiga.app.ui.screens.HomeScreen
 import br.com.meugiga.app.ui.screens.PrivacyScreen
 import br.com.meugiga.app.ui.screens.SettingsScreen
+import br.com.meugiga.app.ui.screens.WifiScreen
 import br.com.meugiga.app.viewmodel.MainUiState
+import br.com.meugiga.app.viewmodel.WifiUiState
+import br.com.meugiga.app.domain.WifiPeriod
 import java.time.LocalDate
 
 private data class MainDestination(
@@ -43,14 +47,19 @@ private data class MainDestination(
 
 private val destinations = listOf(
     MainDestination("summary", "Resumo", Icons.Rounded.Home),
-    MainDestination("apps", "Aplicativos", Icons.Rounded.Apps),
+    MainDestination("apps", "Apps", Icons.Rounded.Apps),
     MainDestination("history", "Histórico", Icons.Rounded.History),
-    MainDestination("settings", "Configurações", Icons.Rounded.Settings),
+    MainDestination("wifi", "Wi-Fi", Icons.Rounded.Wifi),
+    MainDestination("settings", "Ajustes", Icons.Rounded.Settings),
 )
 
 @Composable
 fun MeugigaApp(
     state: MainUiState,
+    wifiState: WifiUiState,
+    onWifiOpen: () -> Unit,
+    onWifiRefresh: () -> Unit,
+    onWifiPeriodSelected: (WifiPeriod) -> Unit,
     onGrantUsageAccess: () -> Unit,
     onRefresh: () -> Unit,
     onPresetSelected: (PeriodPreset) -> Unit,
@@ -60,6 +69,7 @@ fun MeugigaApp(
     onSetAlerts: (Boolean, Set<Int>) -> Unit,
     onSetBackgroundInterval: (Int) -> Unit,
     onSetTheme: (ThemeMode) -> Unit,
+    onExportCsv: () -> Unit,
     navController: NavHostController = rememberNavController(),
 ) {
     val backStack by navController.currentBackStackEntryAsState()
@@ -112,6 +122,7 @@ fun MeugigaApp(
                     onCustomSelected,
                     onOpenApp = { navController.navigate("app/$it") },
                     onRefresh = onRefresh,
+                    onExportCsv = onExportCsv,
                 )
             }
             composable("history") {
@@ -121,6 +132,15 @@ fun MeugigaApp(
                     onPresetSelected,
                     onCustomSelected,
                     onRefresh,
+                )
+            }
+            composable("wifi") {
+                WifiScreen(
+                    state = wifiState,
+                    onOpen = onWifiOpen,
+                    onSelectPeriod = onWifiPeriodSelected,
+                    onRefresh = onWifiRefresh,
+                    onGrantUsageAccess = onGrantUsageAccess,
                 )
             }
             composable("settings") {

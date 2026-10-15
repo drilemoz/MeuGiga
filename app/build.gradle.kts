@@ -14,8 +14,8 @@ android {
         applicationId = "br.com.meugiga.app"
         minSdk = 23
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.1.3"
+        versionCode = 7
+        versionName = "0.1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

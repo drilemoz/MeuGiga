@@ -6,7 +6,8 @@ O MeuGiga usa `NetworkStatsManager` desde o Android 6.0 (API 23). O acesso a out
 
 ## Rede móvel
 
-Todas as chamadas recebem `ConnectivityManager.TYPE_MOBILE`. Nenhuma chamada usa `TYPE_WIFI`.
+Somente as chamadas do **leitor móvel** recebem `ConnectivityManager.TYPE_MOBILE`.
+Os gráficos, histórico Room e alertas continuam ligados exclusivamente a ele.
 
 O identificador do assinante é `null`. Desde Android 10, esse é o caminho compatível para consultar o total acessível das redes móveis sem pedir um identificador protegido do SIM.
 
@@ -40,3 +41,22 @@ O resultado pode divergir por:
 
 O MeuGiga é um monitor e não substitui o medidor oficial da operadora.
 
+
+## Wi-Fi (aba separada, desde 0.1.6)
+
+`AndroidWifiUsageReader` consulta `NetworkStatsManager` com
+`ConnectivityManager.TYPE_WIFI` e `subscriberId = null`, agregando todas as
+redes Wi-Fi disponíveis. `querySummaryForDevice` dá o total de download e
+upload; `querySummary` oferece consumo por UID apenas se permitido.
+
+A autorização especial `PACKAGE_USAGE_STATS` continua necessária. Se o total
+estiver disponível e a listagem de UIDs falhar, a tela mostra o total e um
+aviso de que o ranking não está disponível, sem inventar resultados. Se a
+consulta do dispositivo falhar, não apresenta zeros como se fossem leitura.
+
+As consultas Wi-Fi são **sob demanda** (abrir, selecionar período, atualizar).
+Não gravam bytes no Room, não alimentam franquia/gráficos/alertas móveis e
+não executam em background. Wi-Fi pode incluir tráfego de rede local; o
+histórico depende do Android e não distingue SSIDs nem mede velocidade.
+
+Referência: https://developer.android.com/reference/android/app/usage/NetworkStatsManager

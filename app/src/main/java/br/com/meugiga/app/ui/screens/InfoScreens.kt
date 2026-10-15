@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import br.com.meugiga.app.BuildConfig
-import br.com.meugiga.app.ui.components.MobileOnlyBadge
 
 @Composable
 fun PrivacyScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -35,7 +34,7 @@ fun PrivacyScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             contentPadding = PaddingValues(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            item { MobileOnlyBadge() }
+            item { Text("Dados móveis e Wi-Fi são consultados separadamente.", style = MaterialTheme.typography.bodyMedium) }
             item {
                 InfoCard(
                     "Tudo permanece no aparelho",
@@ -51,13 +50,20 @@ fun PrivacyScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             item {
                 InfoCard(
                     "Acesso às estatísticas de uso",
-                    "Essa autorização especial do Android é usada somente para consultar os bytes recebidos e enviados pela rede móvel e associá-los aos aplicativos visíveis no aparelho.",
+                    "Essa autorização especial do Android permite consultar os bytes recebidos e enviados pela rede móvel e pela aba Wi-Fi, incluindo dados por aplicativo quando o sistema disponibiliza.",
                 )
             }
             item {
                 InfoCard(
-                    "Wi‑Fi ignorado",
-                    "Nenhuma consulta, cálculo, gráfico, ranking ou alerta inclui tráfego Wi‑Fi.",
+                    "Exportação sob seu controle",
+                    "O relatório CSV só é criado quando você solicita e escolhe um local pelo seletor do Android. " +
+                        "Ele contém nomes dos apps e consumo. Se salvar em uma nuvem, o provedor poderá acessar o arquivo.",
+                )
+            }
+            item {
+                InfoCard(
+                    "Wi‑Fi em menu separado",
+                    "A aba Wi-Fi é consultada sob demanda. Seus dados não entram na franquia, nos gráficos, alertas nem no histórico de dados móveis e não são enviados para servidores.",
                 )
             }
         }

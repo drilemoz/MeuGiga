@@ -2,6 +2,16 @@ package br.com.meugiga.app
 
 import android.os.Bundle
 import android.provider.Settings
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
+import br.com.meugiga.app.export.UsageCsvExporter
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,12 +31,45 @@ import br.com.meugiga.app.ui.screens.OnboardingScreen
 import br.com.meugiga.app.ui.screens.WhatsNewScreen
 import br.com.meugiga.app.ui.theme.MeugigaTheme
 import br.com.meugiga.app.viewmodel.MainViewModel
+import br.com.meugiga.app.viewmodel.WifiViewModel
 
 class MainActivity : ComponentActivity() {
+    private val createCsvDocument = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("text/csv"),
+    ) { uri: Uri? ->
+        val report = mainViewModel.consumePreparedCsvExport()
+        if (uri != null) {
+            if (report == null) {
+                Toast.makeText(this, "Relatório indisponível. Tente exportar novamente.", Toast.LENGTH_LONG).show()
+            } else {
+                lifecycleScope.launch {
+                    val result = withContext(Dispatchers.IO) {
+                        runCatching {
+                            val data = UsageCsvExporter.bytes(report)
+                            contentResolver.openOutputStream(uri)?.use { output ->
+                                output.write(data)
+                                output.flush()
+                            } ?: error("Não foi possível abrir o arquivo escolhido.")
+                        }
+                    }
+                    Toast.makeText(
+                        this@MainActivity,
+                        if (result.isSuccess) "CSV salvo com sucesso." else "Falha ao salvar CSV: ${result.exceptionOrNull()?.message ?: "erro desconhecido"}",
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }
+        }
+    }
+
     private val updatedInstall: Boolean by lazy(::detectUpdatedInstall)
 
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModel.factory((application as MeugigaApplication).container)
+    }
+
+    private val wifiViewModel: WifiViewModel by viewModels {
+        WifiViewModel.factory((application as MeugigaApplication).container)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +78,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val state by mainViewModel.state.collectAsStateWithLifecycle()
+            val wifiState by wifiViewModel.state.collectAsStateWithLifecycle()
             MeugigaTheme(state.settings.themeMode) {
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     when {
@@ -56,6 +100,10 @@ class MainActivity : ComponentActivity() {
                             )
                         else -> MeugigaApp(
                             state = state,
+                            wifiState = wifiState,
+                            onWifiOpen = wifiViewModel::onOpened,
+                            onWifiRefresh = wifiViewModel::refresh,
+                            onWifiPeriodSelected = wifiViewModel::selectPeriod,
                             onGrantUsageAccess = ::openUsageAccessSettings,
                             onRefresh = mainViewModel::refreshNow,
                             onPresetSelected = mainViewModel::selectPeriod,
@@ -65,6 +113,7 @@ class MainActivity : ComponentActivity() {
                             onSetAlerts = mainViewModel::setAlerts,
                             onSetBackgroundInterval = mainViewModel::setBackgroundInterval,
                             onSetTheme = mainViewModel::setTheme,
+                            onExportCsv = ::exportCsvReport,
                         )
                     }
                 }
@@ -88,6 +137,15 @@ class MainActivity : ComponentActivity() {
         val packageInfo = packageManager.getPackageInfo(packageName, 0)
         packageInfo.lastUpdateTime > packageInfo.firstInstallTime
     }.getOrDefault(false)
+
+    private fun exportCsvReport() {
+        if (!mainViewModel.prepareCsvExport()) {
+            Toast.makeText(this, "Atualize o período antes de exportar o relatório.", Toast.LENGTH_LONG).show()
+            return
+        }
+        val suffix = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
+        createCsvDocument.launch("MeuGiga-consumo-$suffix.csv")
+    }
 
     private fun openUsageAccessSettings() {
         runCatching { startActivity(mainViewModel.usageAccessSettingsIntent()) }

@@ -31,10 +31,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import br.com.meugiga.app.domain.DailyUsageGrouper
 import br.com.meugiga.app.domain.model.TimelineUsage
 import br.com.meugiga.app.utils.ByteFormatter
 import br.com.meugiga.app.utils.DateFormatters
-import java.time.Instant
 import java.time.ZoneId
 
 data class UsageChartPoint(
@@ -83,7 +83,7 @@ fun UsageBarChart(
                 val rxRatio = if (point.totalBytes > 0) point.rxBytes.toFloat() / point.totalBytes else 0f
                 Column(
                     modifier = Modifier
-                        .width(46.dp)
+                        .width(if ('–' in point.label) 94.dp else 46.dp)
                         .semantics {
                             contentDescription = "${point.label}: ${ByteFormatter.format(point.totalBytes)}"
                         }
@@ -152,14 +152,6 @@ fun intervalChartPoints(timeline: List<TimelineUsage>): List<UsageChartPoint> = 
 fun dailyChartPoints(
     timeline: List<TimelineUsage>,
     zoneId: ZoneId = ZoneId.systemDefault(),
-): List<UsageChartPoint> = timeline
-    .groupBy { Instant.ofEpochMilli(it.startMillis).atZone(zoneId).toLocalDate() }
-    .toSortedMap()
-    .map { (date, values) ->
-        UsageChartPoint(
-            label = "${date.dayOfMonth.toString().padStart(2, '0')}/${date.monthValue.toString().padStart(2, '0')}",
-            rxBytes = values.sumOf { it.rxBytes },
-            txBytes = values.sumOf { it.txBytes },
-        )
-    }
-
+): List<UsageChartPoint> = DailyUsageGrouper.group(timeline, zoneId).map {
+    UsageChartPoint(label = it.label, rxBytes = it.rxBytes, txBytes = it.txBytes)
+}

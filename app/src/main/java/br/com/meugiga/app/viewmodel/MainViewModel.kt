@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import br.com.meugiga.app.AppContainer
+import br.com.meugiga.app.domain.BackgroundSyncPolicy
 import br.com.meugiga.app.domain.model.AppSettings
 import br.com.meugiga.app.domain.model.BillingCycle
 import br.com.meugiga.app.domain.model.PeriodPreset
@@ -53,6 +54,7 @@ class MainViewModel(
     private val refreshMutex = Mutex()
     private var foregroundJob: Job? = null
     private var lastTimelineRefreshMillis: Long = 0
+    private var pendingExportReport: UsageReport? = null
 
     init {
         _state.update { it.copy(hasUsageAccess = container.usageAccessController.hasAccess()) }
@@ -80,6 +82,10 @@ class MainViewModel(
     fun stopForegroundUpdates() {
         foregroundJob?.cancel()
         foregroundJob = null
+        // Without a worker, leaving the last notification visible would imply fresh data.
+        if (_state.value.settings.backgroundIntervalMinutes == BackgroundSyncPolicy.DISABLED) {
+            container.notificationManager.cancelContinuous()
+        }
     }
 
     fun refreshNow() {
@@ -88,11 +94,46 @@ class MainViewModel(
 
     fun refreshPermissionState() {
         val granted = container.usageAccessController.hasAccess()
+        val previous = _state.value
+        val settings = previous.settings
+        if (previous.hasUsageAccess != granted) {
+            container.workScheduler.configure(
+                intervalMinutes = settings.backgroundIntervalMinutes,
+                enabled = BackgroundSyncPolicy.shouldSchedule(
+                    settings.onboardingComplete,
+                    granted,
+                    settings.backgroundIntervalMinutes,
+                ),
+            )
+        }
         _state.update { it.copy(hasUsageAccess = granted) }
-        if (granted && _state.value.settings.onboardingComplete) refreshNow()
+        if (granted && settings.onboardingComplete) refreshNow()
     }
 
     fun usageAccessSettingsIntent(): Intent = container.usageAccessController.settingsIntent()
+
+    /** Evita exportar o relatório antigo durante uma troca de filtro/período. */
+    fun reportReadyForExport(): UsageReport? {
+        val current = _state.value
+        if (current.isRefreshing || !current.initialized) return null
+        val cycle = current.cycle ?: return null
+        val expected = selectedPeriod(current, cycle)
+        return current.analysisReport?.takeIf {
+            it.period.cacheKey == expected.cacheKey &&
+                it.period.startMillis == expected.startMillis &&
+                it.period.endMillis == expected.endMillis &&
+                it.capturedAtMillis > 0L && it.source != ReportSource.EMPTY
+        }
+    }
+
+    fun prepareCsvExport(): Boolean {
+        pendingExportReport = reportReadyForExport()
+        return pendingExportReport != null
+    }
+
+    fun consumePreparedCsvExport(): UsageReport? = pendingExportReport.also {
+        pendingExportReport = null
+    }
 
     fun selectPeriod(preset: PeriodPreset) {
         if (preset == PeriodPreset.CUSTOM) return

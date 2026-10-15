@@ -29,7 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
+import br.com.meugiga.app.ui.theme.GigaNavy
+import br.com.meugiga.app.ui.theme.GigaBlue
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import br.com.meugiga.app.domain.model.AppUsage
@@ -143,7 +144,7 @@ fun HomeScreen(
         item {
             SectionTitle(
                 "Evolução do ciclo",
-                subtitle = "Download e upload conforme os intervalos fornecidos pelo Android",
+                subtitle = "Buckets entre dois dias aparecem como intervalos, sem divisão estimada",
             )
         }
         item {
@@ -188,15 +189,7 @@ private fun PlanHero(
     periodLabel: String,
     renewalLabel: String,
 ) {
-    val darkTheme = MaterialTheme.colorScheme.background.luminance() < .5f
-    val gradient = if (darkTheme) {
-        listOf(
-            MaterialTheme.colorScheme.primaryContainer,
-            MaterialTheme.colorScheme.secondaryContainer,
-        )
-    } else {
-        listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
-    }
+    val gradient = listOf(GigaNavy, GigaBlue)
     Card(
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
@@ -211,11 +204,11 @@ private fun PlanHero(
                 .padding(22.dp),
             verticalArrangement = Arrangement.spacedBy(9.dp),
         ) {
-            Text("Ciclo atual", style = MaterialTheme.typography.titleMedium, color = Color.White.copy(alpha = .82f))
+            Text("Ciclo atual", style = MaterialTheme.typography.titleMedium, color = Color.White)
             Text(
                 periodLabel,
                 style = MaterialTheme.typography.labelLarge,
-                color = Color.White.copy(alpha = .78f),
+                color = Color.White,
             )
             Text(
                 "${ByteFormatter.format(usedBytes)} usados",
@@ -226,7 +219,7 @@ private fun PlanHero(
                 totalBytes?.let { "de ${ByteFormatter.format(it)}  •  ${(percentUsed ?: 0.0).roundToInt()}% do plano" }
                     ?: "Plano sem limite definido",
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.White.copy(alpha = .9f),
+                color = Color.White,
             )
             if (totalBytes != null) {
                 LinearProgressIndicator(
@@ -239,7 +232,7 @@ private fun PlanHero(
             Spacer(Modifier.height(5.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column {
-                    Text("Restante", color = Color.White.copy(alpha = .75f), style = MaterialTheme.typography.bodyMedium)
+                    Text("Restante", color = Color.White, style = MaterialTheme.typography.bodyMedium)
                     Text(
                         remainingBytes?.let(ByteFormatter::format) ?: "—",
                         color = Color.White,
@@ -248,7 +241,7 @@ private fun PlanHero(
                     )
                 }
                 Column {
-                    Text("Renovação", color = Color.White.copy(alpha = .75f), style = MaterialTheme.typography.bodyMedium)
+                    Text("Renovação", color = Color.White, style = MaterialTheme.typography.bodyMedium)
                     Text(
                         renewalLabel,
                         color = Color.White,
@@ -257,7 +250,7 @@ private fun PlanHero(
                     )
                     Text(
                         if (daysRemaining == 1) "1 dia restante" else "$daysRemaining dias restantes",
-                        color = Color.White.copy(alpha = .75f),
+                        color = Color.White,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }

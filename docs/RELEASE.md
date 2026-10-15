@@ -1,22 +1,27 @@
-# MeuGiga — Build Android
+# MeuGiga — publicação Android (0.1.6)
 
-## APK automático
+## CI (`android-ci.yml`)
 
-Ao enviar alterações para `main` ou `master`, o workflow **Android Signed APK** executa automaticamente.
+Em push, pull request ou execução manual, o workflow roda `lintDebug`,
+`testDebugUnitTest` e `assembleDebug`. O APK não assinado para distribuição
+(padrão debug) fica disponível como artifact por 14 dias.
 
-Ele:
+## Release (`android-release.yml`)
 
-1. valida os quatro Secrets de assinatura;
-2. restaura o keystore temporariamente no runner;
-3. executa testes e lint de release;
-4. gera `app-release.apk` assinado;
-5. valida a assinatura com `apksigner`;
-6. envia um artifact de backup chamado `MeuGiga-0.1.3-release-signed-apk`;
-7. publica o APK diretamente em **GitHub Releases**, na versão de teste `meugiga-latest-build`.
+Em pushes para `main`/`master` ou execução manual:
 
-Arquivo final:
+1. Valida os quatro Secrets de assinatura.
+2. Reconstrói o keystore apenas no diretório temporário.
+3. Executa testes, lint, `assembleRelease` e `bundleRelease`.
+4. Valida o APK com `apksigner`.
+5. Publica os artifacts `MeuGiga-0.1.6-release-signed.apk` e
+   `MeuGiga-0.1.6-release-signed.aab` por 30 dias no workflow.
+6. Cria prerelease GitHub com tag `meugiga-v0.1.6-<SHA7>`;
+   não apaga nem substitui releases anteriores.
 
-`MeuGiga-0.1.3-release-signed.apk`
+Se um mesmo commit for executado novamente, a prerelease existente é
+preservada. A falha ao criar uma nova prerelease não elimina o artifact
+que já foi carregado no workflow.
 
 ## Secrets obrigatórios
 
@@ -25,8 +30,6 @@ Arquivo final:
 - `ANDROID_KEY_ALIAS`
 - `ANDROID_KEY_PASSWORD`
 
-O workflow falha de forma explícita se qualquer Secret estiver ausente ou inválido.
-
-## CI
-
-O workflow `Android CI` executa apenas lint e testes. Ele não publica mais APK debug nem relatórios como artifacts, evitando confusão na tela de APKs/Artifacts.
+**Importante:** mantenha o mesmo keystore das versões distribuídas. Uma troca
+de assinatura pode impedir atualização do APK instalado. Não inclua tokens,
+keystores ou senhas no código-fonte e no ZIP público.

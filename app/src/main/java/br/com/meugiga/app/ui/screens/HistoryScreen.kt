@@ -113,7 +113,7 @@ fun HistoryScreen(
                 } else {
                     "Consumo diário"
                 },
-                subtitle = "A granularidade respeita os buckets disponibilizados pelo Android",
+                subtitle = "Buckets que atravessam a meia-noite aparecem como intervalos, sem divisão estimada",
             )
         }
         item {

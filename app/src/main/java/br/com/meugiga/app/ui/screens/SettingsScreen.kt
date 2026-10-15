@@ -170,6 +170,13 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(top = 14.dp, bottom = 6.dp),
                 )
+                if (state.settings.alertThresholds.isEmpty()) {
+                    Text(
+                        "Nenhum percentual selecionado. Os alertas não serão disparados.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 Row(
                     Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -205,7 +212,7 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
-                    "O Android pode atrasar a execução para economizar bateria.",
+                    "Desativado economiza bateria: dados e alertas atualizam só com o app aberto. A notificação fixa é ocultada ao sair. O Android pode atrasar agendamentos.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -213,11 +220,11 @@ fun SettingsScreen(
                     Modifier.padding(top = 8.dp).horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    listOf(15, 30, 60).forEach { minutes ->
+                    listOf(0, 15, 30, 60).forEach { minutes ->
                         FilterChip(
                             selected = state.settings.backgroundIntervalMinutes == minutes,
                             onClick = { onSetBackgroundInterval(minutes) },
-                            label = { Text("$minutes min") },
+                            label = { Text(if (minutes == 0) "Desativado" else "$minutes min") },
                         )
                     }
                 }

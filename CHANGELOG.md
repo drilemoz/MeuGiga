@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.1.6 — 14/10/2026
+
+- nova aba Wi-Fi na barra de navegação, sem gráficos e com total, download, upload, períodos Hoje/Ontem/7/30 dias e ranking por aplicativo;
+- consultas com `TYPE_WIFI` independentes do leitor de dados móveis, executadas somente ao abrir a aba ou solicitar atualização;
+- mantém franquia, alertas, gráficos, banco de histórico e WorkManager somente com dados móveis;
+- tratamento de restrições de leitura do Android: total disponível mesmo quando o detalhamento por app estiver bloqueado, com aviso claro;
+- testes dos períodos e agregação de consumo Wi-Fi, sem migrar Room schema 2;
+- versionCode 7 e versionName 0.1.6 sincronizados com metadados, documentação e Novidades.
+
+## 0.1.5 — 14/10/2026
+
+- exportação CSV local na tela **Aplicativos**, para o período selecionado, sem permissão de armazenamento ou internet;
+- inclui totais do aparelho, bytes recebidos/enviados, consumo por UID, rótulo/pacote, origem (ao vivo/cache) e horário de coleta;
+- arquivo UTF-8 com BOM e `;` como delimitador, adequado para planilhas pt-BR; escapa aspas e neutraliza fórmulas em campos fornecidos por apps;
+- exportação usa uma cópia do relatório selecionado e bloqueia dados vazios, antigos ou de filtro ainda não atualizado;
+- cinco novos testes unitários do CSV, mantendo os testes anteriores;
+- Room schema 2 e identificador Android inalterados, versionCode 6.
+
+
+## 0.1.4 — 14/10/2026
+
+- respeita a seleção intencionalmente vazia de limiares, sem repor alertas padrão;
+- opção Desativado na sincronização periódica, cancelando o WorkManager e mantendo atualização ao abrir o app;
+- não agenda consultas antes do onboarding ou sem permissão; worker verifica requisitos antes da execução; oculta a notificação fixa ao sair quando o segundo plano está desligado;
+- gráfico diário preserva buckets que atravessam a meia-noite sem atribuí-los erroneamente ao primeiro dia;
+- onboarding com rolagem em dispositivos compactos e contraste reforçado no cartão principal;
+- CI passa a compilar e publicar o APK de debug como artifact; release publica APK e AAB em tag imutável por versão e commit, sem apagar releases antigas;
+- novos testes unitários para limiares, política de sincronização e agrupamento diário;
+- mantido Room schema 2, sem migração destrutiva; versionCode 5.
+
+
 ## 0.1.3 — 26/09/2026
 
 - corrigida a média diária do Histórico para considerar somente os dias efetivamente cobertos pelo intervalo;

@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -69,43 +71,50 @@ fun OnboardingScreen(
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
             )
-            Spacer(Modifier.weight(0.35f))
-            AnimatedContent(
-                targetState = step,
-                transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(160)) },
-                label = "onboarding-step",
-                modifier = Modifier.fillMaxWidth(),
-            ) { page ->
-                when (page) {
-                    0 -> IntroPage(
-                        icon = Icons.Rounded.DataUsage,
-                        title = "Controle seus dados móveis",
-                        description = "Veja quanto você utiliza e quais aplicativos mais consomem sua internet.",
-                    )
-                    1 -> Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
-                        PageHeading(
-                            Icons.Rounded.CellTower,
-                            "Configure seu plano",
-                            "Informe sua franquia e o dia de renovação. Você poderá alterar tudo depois.",
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                AnimatedContent(
+                    targetState = step,
+                    transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(160)) },
+                    label = "onboarding-step",
+                    modifier = Modifier.fillMaxWidth(),
+                ) { page ->
+                    when (page) {
+                        0 -> IntroPage(
+                            icon = Icons.Rounded.DataUsage,
+                            title = "Controle seus dados móveis",
+                            description = "Veja quanto você utiliza e quais aplicativos mais consomem sua internet.",
                         )
-                        PlanFields(plan, { plan = it })
-                    }
-                    else -> Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
-                        PageHeading(
-                            Icons.Rounded.Security,
-                            "Permissão necessária",
-                            "O Android exige acesso especial para mostrar o consumo de outros aplicativos. Nenhuma informação sai do aparelho.",
-                        )
-                        PermissionStatus(granted = hasUsageAccess)
-                        if (!hasUsageAccess) {
-                            Button(onClick = onOpenUsageAccess, modifier = Modifier.fillMaxWidth()) {
-                                Text("Conceder acesso")
+                        1 -> Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
+                            PageHeading(
+                                Icons.Rounded.CellTower,
+                                "Configure seu plano",
+                                "Informe sua franquia e o dia de renovação. Você poderá alterar tudo depois.",
+                            )
+                            PlanFields(plan, { plan = it })
+                        }
+                        else -> Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
+                            PageHeading(
+                                Icons.Rounded.Security,
+                                "Permissão necessária",
+                                "O Android exige acesso especial para mostrar o consumo de outros aplicativos. Nenhuma informação sai do aparelho.",
+                            )
+                            PermissionStatus(granted = hasUsageAccess)
+                            if (!hasUsageAccess) {
+                                Button(onClick = onOpenUsageAccess, modifier = Modifier.fillMaxWidth()) {
+                                    Text("Conceder acesso")
+                                }
                             }
                         }
                     }
                 }
             }
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.size(12.dp))
             StepDots(current = step, total = 3, Modifier.align(Alignment.CenterHorizontally))
             Spacer(Modifier.size(18.dp))
             if (step < 2) {

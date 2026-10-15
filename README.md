@@ -2,9 +2,9 @@
 
 **Seu consumo de dados, sem complicação.**
 
-MeuGiga é um aplicativo Android nativo que acompanha exclusivamente o consumo de **dados móveis**. Não monitora Wi‑Fi, não usa VPN, não bloqueia internet, não limpa o aparelho e não inclui publicidade ou rastreamento.
+MeuGiga é um aplicativo Android nativo que acompanha o consumo de **dados móveis** e oferece uma consulta de **Wi-Fi em uma aba independente**. Wi-Fi não participa da franquia, alertas, gráficos ou histórico móvel. Não usa VPN, não bloqueia internet, não limpa o aparelho e não inclui publicidade ou rastreamento.
 
-## Estado da versão 0.1.3
+## Estado da versão 0.1.6
 
 - resumo compacto do ciclo atual com datas de início e fim;
 - franquia limitada ou plano sem limite definido;
@@ -15,14 +15,17 @@ MeuGiga é um aplicativo Android nativo que acompanha exclusivamente o consumo d
 - detalhes por aplicativo com histórico e intervalos fornecidos pelo Android;
 - filtros Hoje, Ontem, 7 dias, 30 dias, Ciclo e Personalizado;
 - média diária calculada pelos dias efetivamente cobertos pelo período, sem duplicar o dia final;
-- cache e histórico local em Room;
+- cache e histórico local em Room, mantendo buckets que atravessam a meia-noite como intervalos separados nos gráficos (sem divisão fictícia entre dias);
 - atualização em primeiro plano a cada 60 segundos;
-- atualização periódica com WorkManager em 15, 30 ou 60 minutos;
-- notificação persistente opcional e alertas percentuais configuráveis;
-- tema claro, escuro ou seguindo o sistema;
+- atualização periódica configurável: desativada, 15, 30 ou 60 minutos; executada somente após onboarding e com permissão de estatísticas;
+- notificação persistente opcional e alertas percentuais configuráveis, inclusive nenhum selecionado;
+- tema claro, escuro ou seguindo o sistema; cartões principais com contraste reforçado;
 - início do primeiro ciclo configurável, seguido da renovação recorrente;
-- onboarding de três etapas;
+- onboarding de três etapas com rolagem em telas compactas;
 - tela de novidades exibida uma vez após cada atualização instalada;
+- exportação manual de relatório CSV completo por período, via seletor de arquivos do Android, sem envio automático;
+- nova aba **Wi-Fi** independente, com total/download/upload, filtros Hoje/Ontem/7/30 dias e ranking por app quando o Android disponibilizar;
+- Wi-Fi consultado apenas ao abrir a aba, mudar filtro ou atualizar, sem gráficos, persistência de histórico ou worker Wi-Fi;
 - nenhum cadastro, login ou servidor.
 
 ## Tecnologias
@@ -46,10 +49,11 @@ O `targetSdk 36` atende à regra anunciada para novos apps e atualizações envi
 ```text
 br.com.meugiga.app
 ├── data
-│   ├── database       Room, entidades e consultas
-│   ├── networkstats   acesso e leitura exclusiva de TYPE_MOBILE
-│   └── repository     catálogo de apps e composição dos relatórios
+│   ├── database       Room, entidades e consultas móveis
+│   ├── networkstats   leitores separados: TYPE_MOBILE e TYPE_WIFI
+│   └── repository     catálogo de apps e relatórios separados
 ├── domain             ciclos, períodos, métricas e agregação
+├── export             relatório CSV local e escape de campos
 ├── notification       notificação de status e alertas
 ├── settings           preferências locais em DataStore
 ├── ui                  Compose, tema, componentes e telas
@@ -62,31 +66,47 @@ Detalhes em [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Como o NetworkStatsManager é usado
 
-Toda consulta de rede passa por `AndroidNetworkStatsReader` e usa somente:
+O leitor móvel `AndroidNetworkStatsReader` continua usando **somente**
+`ConnectivityManager.TYPE_MOBILE`. Os gráficos, a franquia, o cache Room, os
+alertas e o WorkManager continuam exclusivos da rede móvel.
 
-```kotlin
-ConnectivityManager.TYPE_MOBILE
-```
+O leitor separado `AndroidWifiUsageReader` usa `ConnectivityManager.TYPE_WIFI`
+com `subscriberId = null`, para consultar **todas as redes Wi-Fi agregadas**.
+A tela Wi-Fi permite Hoje, Ontem, 7 dias ou 30 dias, sem depender do ciclo do
+plano. O total do aparelho vem de `querySummaryForDevice`, e o ranking por UID
+vem de `querySummary`, caso disponibilizado pelo fabricante e permissão.
+Não são atribuídos bytes de Wi-Fi a aplicativos móveis nem salvos históricos
+Wi-Fi no Room. A consulta Wi-Fi ocorre somente quando a aba é aberta ou usada.
 
-O `subscriberId` é `null`, conforme permitido nas versões modernas do Android, para agregar as redes móveis acessíveis sem solicitar identificadores do SIM ou permissão de telefone. Wi‑Fi não participa de nenhuma consulta ou cálculo.
-
-O Android reúne o histórico em buckets discretos. Esses buckets normalmente têm duração da ordem de horas e podem variar por fabricante. O MeuGiga:
-
-- mantém o início e o fim reais de cada bucket;
-- não interpola tráfego por minuto;
-- atualiza totais com mais frequência do que o histórico detalhado;
-- salva por `UID + início + fim`, substituindo o mesmo bucket em vez de duplicá-lo;
-- mantém até 120 dias de dados locais;
-- preserva o último cache válido quando o Android não entrega uma consulta de estatísticas;
-- classifica os UIDs especiais de agregação, aplicativos removidos e tethering sem atribuí-los incorretamente ao Sistema Android.
+**Limitações:** o consumo Wi-Fi pode incluir tráfego LAN; não separa redes
+por SSID, não mede velocidade Mbps e pode não corresponder à soma dos apps.
+O Android pode restringir o ranking por UID mesmo que forneça o total. Os
+buckets do sistema não oferecem resolução garantida ao minuto.
 
 Mais detalhes em [docs/NETWORK_STATS.md](docs/NETWORK_STATS.md).
+
+## Exportar relatório CSV
+
+Em **Aplicativos**, selecione Hoje, Ontem, 7 dias, 30 dias, Ciclo ou Personalizado,
+aguarde o término da atualização e toque em **Exportar relatório CSV**. O
+seletor de arquivos do Android permite escolher o destino, inclusive um provedor
+na nuvem já configurado pelo usuário. O próprio MeuGiga não acessa a internet.
+
+O CSV é UTF-8 com BOM, separado por ponto e vírgula; contém todos os apps do
+período selecionado independentemente do texto de busca, além dos totais do aparelho.
+Os valores são **bytes** e as datas usam offset de fuso horário. `fim_exclusivo`
+indica o limite final sem inclusão do instante terminal. `origem=CACHE` indica
+leitura do cache local e não uma medição nova. O CSV não é um backup restaurável,
+nem inclui todos os buckets do histórico: seu propósito é análise em planilha.
+
+**Privacidade:** nomes de aplicativos e consumo ficam no arquivo que o usuário
+salvar. Quem tiver acesso ao destino escolhido poderá ler o relatório.
 
 ## Permissões
 
 ### PACKAGE_USAGE_STATS
 
-É uma autorização especial concedida manualmente em **Configurações > Acesso ao uso**. Permite consultar estatísticas de outros UIDs. O manifesto declara a intenção, mas somente o usuário pode concedê-la.
+É uma autorização especial concedida manualmente em **Configurações > Acesso ao uso**. Permite consultar estatísticas de outros UIDs, incluindo uso de Wi-Fi quando liberado pelo sistema. O manifesto declara a intenção, mas somente o usuário pode concedê-la.
 
 ### POST_NOTIFICATIONS
 
@@ -155,9 +175,9 @@ Os testes cobrem:
 
 ## GitHub Actions
 
-`android-ci.yml` executa lint, testes e gera o APK debug em pushes, pull requests e execução manual.
+`android-ci.yml` executa lint, testes, compila `assembleDebug` e disponibiliza o APK debug nos Artifacts de pushes, pull requests e execução manual.
 
-`android-release.yml` gera APK release assinado e AAB manualmente, valida o keystore e verifica a assinatura do APK com `apksigner`. Configure estes GitHub Secrets:
+`android-release.yml` gera APK e AAB assinados automaticamente nos pushes de `main`/`master` ou manualmente, verifica a assinatura do APK e publica uma prerelease identificada pela versão e pelo commit, sem excluir releases anteriores. Configure estes GitHub Secrets:
 
 - `ANDROID_KEYSTORE_BASE64`;
 - `ANDROID_KEYSTORE_PASSWORD`;
@@ -180,6 +200,8 @@ Antes da publicação, hospede a política de privacidade em uma URL pública, c
 
 ## Limitações conhecidas
 
+- o CSV exporta o relatório do período, mas **não é backup restaurável**; não existe restauração do banco local e dados do app podem ser perdidos em reinstalação/limpeza;
+- se o monitoramento em segundo plano estiver desativado, alertas não serão atualizados com o aplicativo fechado e a notificação fixa é ocultada ao sair; as consultas continuam ao abri-lo;
 - operadoras podem contabilizar tráfego de forma diferente do Android;
 - tethering, apps removidos, UIDs compartilhados e tráfego do sistema podem aparecer agregados;
 - alguns fabricantes atrasam ou restringem a atualização das estatísticas;

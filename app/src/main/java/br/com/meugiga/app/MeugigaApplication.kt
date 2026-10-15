@@ -1,6 +1,7 @@
 package br.com.meugiga.app
 
 import android.app.Application
+import br.com.meugiga.app.domain.BackgroundSyncPolicy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,9 +21,15 @@ class MeugigaApplication : Application() {
         container.notificationManager.createChannels()
         applicationScope.launch {
             container.settingsRepository.settings
-                .map { it.backgroundIntervalMinutes }
+                .map { it.onboardingComplete to it.backgroundIntervalMinutes }
                 .distinctUntilChanged()
-                .collect(container.workScheduler::schedule)
+                .collect { (completed, minutes) ->
+                    val hasAccess = container.usageAccessController.hasAccess()
+                    container.workScheduler.configure(
+                        intervalMinutes = minutes,
+                        enabled = BackgroundSyncPolicy.shouldSchedule(completed, hasAccess, minutes),
+                    )
+                }
         }
     }
 }
